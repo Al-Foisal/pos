@@ -17,6 +17,7 @@ use App\Models\ReturnOrder;
 use App\Models\ReturnPurchase;
 use App\Models\Supplier;
 use App\Models\TransactionHistory;
+use App\TransactionStrategy;
 use Illuminate\Http\Request;
 
 class DayBookController extends Controller {
@@ -298,7 +299,7 @@ class DayBookController extends Controller {
 
         $data = [];
 
-        $data['strategy'] = dailyTotalIe();
+        $data['strategy'] = TransactionStrategy::strategy();
 
         //cash in hand start
         $data['cash_in_hand'] = PaymentType::whereNull('user_id')
@@ -419,7 +420,7 @@ class DayBookController extends Controller {
             ])
             ->get();
 
-        $data['strategy'] = dailyTotalIe();
+        $data['strategy'] = TransactionStrategy::strategy();
 
         /**
          * income
