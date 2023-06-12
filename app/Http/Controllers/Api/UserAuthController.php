@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetOtp;
+use App\Models\CompanyInfo;
 use App\Models\Customer;
 use App\Models\Package;
 use App\Models\SubscriptionHistory;
@@ -171,6 +172,7 @@ class UserAuthController extends Controller {
 
     public function resendOtp(Request $request) {
 
+        $company = CompanyInfo::find(1);
         DB::beginTransaction();
 
         try {
