@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\TransactionHistory;
+use App\TransactionStrategy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -65,7 +66,7 @@ class IncomeExpenseController extends Controller {
         $data['daily_purchase'] = Purchase::where('user_id', auth()->user()->user_id)->whereDate('created_at', today())->sum('total');
 
         /////////////////
-        $data['strategy'] = DAILY_TOTAL_IE();
+        $data['strategy'] = TransactionStrategy::strategy();
 
         return response()->json([
             'status'  => true,
