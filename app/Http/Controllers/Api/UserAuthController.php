@@ -215,6 +215,38 @@ class UserAuthController extends Controller {
             $user->tokens()->delete();
             Auth::guard('web')->logout();
 
+            if ($request->red_from === 'login') {
+                if (!Auth::attempt([
+                    'email'    => $request->email_or_phone,
+                    'password' => $request->password,
+                    'status'   => 1,
+                ])) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Invalid phone number or unauthorized account!!',
+                    ]);
+                }
+
+                $user = Auth::user();
+                if ($user->validity < today()) {
+                    $user->tokens()->delete();
+                    Auth::guard('web')->logout();
+
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Your account is expired!!',
+                    ]);
+                }
+
+                $tokenResult = $user->createToken('authToken')->plainTextToken;
+
+                return response()->json([
+                    'status'       => true,
+                    'token_type'   => 'Bearer',
+                    'access_token' => $tokenResult,
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
@@ -244,7 +276,7 @@ class UserAuthController extends Controller {
             if (!filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL)) {
 
                 if (!Auth::attempt([
-                    'phone'    => $request->email_or_phone,
+                    'email'    => $request->email_or_phone,
                     'password' => $request->password,
                     'status'   => 1,
                 ])) {
@@ -255,6 +287,7 @@ class UserAuthController extends Controller {
                 }
 
                 $user = Auth::user();
+
                 if ($user->validity < today()) {
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
@@ -266,6 +299,12 @@ class UserAuthController extends Controller {
                 }
 
                 if (!is_null($user->otp)) {
+                    //resend otp if user forgot to verify OTP
+                    $user      = User::where('email', $request->email_or_phone)->first();
+                    $user->otp = rand(111111, 999999);
+                    $user->save();
+                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=gManager%0aYour OTP is ' . $user->otp . '&remove_duplicate=true');
+
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
 
@@ -299,6 +338,7 @@ class UserAuthController extends Controller {
                 }
 
                 $user = Auth::user();
+
                 if ($user->validity < today()) {
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
@@ -310,12 +350,21 @@ class UserAuthController extends Controller {
                 }
 
                 if (!is_null($user->otp)) {
+                    //resend otp if user forgot to verify OTP
+                    $user = User::where('email', $request->email_or_phone)->first();
+
+                    $user->otp = rand(111111, 999999);
+                    $user->save();
+
+                    Mail::to($user->email)->send(new PasswordResetOtp($user->otp));
+
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
 
                     return response()->json([
-                        'status'  => false,
-                        'message' => 'Your account is not verified!!',
+                        'status'       => false,
+                        'message'      => 'Your account is not verified!!',
+                        'otp_required' => true,
                     ]);
                 }
 
