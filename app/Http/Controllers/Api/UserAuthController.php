@@ -61,7 +61,7 @@ class UserAuthController extends Controller {
             ]);
 
             if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=gManager%0aYour OTP is ' . $otp . '&remove_duplicate=true');
+                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $otp . '&remove_duplicate=true');
 
             } else {
                 Mail::to($user->email)->send(new PasswordResetOtp($otp));
@@ -224,7 +224,7 @@ class UserAuthController extends Controller {
 
                 $user->otp = rand(111111, 999999);
                 $user->save();
-                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=gManager%0aYour OTP is ' . $user->otp . '&remove_duplicate=true');
+                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
 
             } else {
 
@@ -303,7 +303,7 @@ class UserAuthController extends Controller {
                     $user      = User::where('email', $request->email_or_phone)->first();
                     $user->otp = rand(111111, 999999);
                     $user->save();
-                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=gManager%0aYour OTP is ' . $user->otp . '&remove_duplicate=true');
+                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
 
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
@@ -410,7 +410,7 @@ class UserAuthController extends Controller {
             $user->save();
 
             if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=gManager%0aYour OTP is ' . $verification_otp . '&remove_duplicate=true');
+                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $verification_otp . '&remove_duplicate=true');
             } else {
                 Mail::to($user->email)->send(new PasswordResetOtp($verification_otp));
             }
