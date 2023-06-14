@@ -152,6 +152,38 @@ class UserAuthController extends Controller {
             $user->otp = null;
             $user->save();
 
+            if ($request->red_from === 'login') {
+                if (!Auth::attempt([
+                    'email'    => $request->email_or_phone,
+                    'password' => $request->password,
+                    'status'   => 1,
+                ])) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Invalid phone number or unauthorized account!!',
+                    ]);
+                }
+
+                $user = Auth::user();
+                if ($user->validity < today()) {
+                    $user->tokens()->delete();
+                    Auth::guard('web')->logout();
+
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Your account is expired!!',
+                    ]);
+                }
+
+                $tokenResult = $user->createToken('authToken')->plainTextToken;
+
+                return response()->json([
+                    'status'       => true,
+                    'token_type'   => 'Bearer',
+                    'access_token' => $tokenResult,
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
@@ -214,38 +246,6 @@ class UserAuthController extends Controller {
 
             $user->tokens()->delete();
             Auth::guard('web')->logout();
-
-            if ($request->red_from === 'login') {
-                if (!Auth::attempt([
-                    'email'    => $request->email_or_phone,
-                    'password' => $request->password,
-                    'status'   => 1,
-                ])) {
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'Invalid phone number or unauthorized account!!',
-                    ]);
-                }
-
-                $user = Auth::user();
-                if ($user->validity < today()) {
-                    $user->tokens()->delete();
-                    Auth::guard('web')->logout();
-
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'Your account is expired!!',
-                    ]);
-                }
-
-                $tokenResult = $user->createToken('authToken')->plainTextToken;
-
-                return response()->json([
-                    'status'       => true,
-                    'token_type'   => 'Bearer',
-                    'access_token' => $tokenResult,
-                ]);
-            }
 
             DB::commit();
 
