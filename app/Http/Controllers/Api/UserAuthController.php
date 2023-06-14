@@ -446,7 +446,7 @@ class UserAuthController extends Controller {
             $validator = Validator::make($request->all(), [
                 'token'    => 'required',
                 'email'    => 'required|email',
-                'password' => 'required|confirmed|min:8', Rules\Password::defaults(),
+                'password' => 'required|confirmed|min:8',
             ]);
 
             $password = DB::table('password_resets')->where('email', $request->email)->where('token', $request->otp)->first();
