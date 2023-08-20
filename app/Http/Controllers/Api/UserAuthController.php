@@ -415,7 +415,8 @@ class UserAuthController extends Controller {
                 $user->save();
 
                 if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $verification_otp . '&remove_duplicate=true');
+                    // return $user->email;
+                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601010510&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $verification_otp . '&remove_duplicate=true');
                 } else {
                     Mail::to($user->email)->send(new PasswordResetOtp($verification_otp));
                 }

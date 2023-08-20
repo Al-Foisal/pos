@@ -108,21 +108,11 @@ class UserProfileController extends Controller {
                 'image'    => 'nullable|image|mimes:jpeg,jpg,png,gif',
             ]);
 
-            if ($request->hasFile('image')) {
+            if ($request['image']) {
 
-                $image_file = $request->file('image');
-
-                if ($image_file) {
-
-                    $img_gen   = hexdec(uniqid());
-                    $image_url = 'images/user/';
-                    $image_ext = strtolower($image_file->getClientOriginalExtension());
-
-                    $img_name    = $img_gen . '.' . $image_ext;
-                    $final_name1 = $image_url . $img_gen . '.' . $image_ext;
-
-                    $image_file->move($image_url, $img_name);
-                }
+                $image_file = base64_decode($request['image']);
+                $b64_image  = '/images/user/' . time() . '.' . 'png';
+                $success    = file_put_contents(public_path() . $b64_image, $image_file);
 
             }
 
@@ -160,7 +150,7 @@ class UserProfileController extends Controller {
             $user->validity          = auth()->user()->validity;
             $user->reference_id      = bin2hex($bytes);
             $user->ip                = getIPAddress();
-            $user->image             = $final_name1 ?? '';
+            $user->image             = $b64_image ?? '';
             $user->save();
 
             $notification          = new Notification();
@@ -224,7 +214,7 @@ class UserProfileController extends Controller {
                     ->with('userRoleAccess')
                     ->get(),
             ]);
-        } catch (\Throwable$th) {
+        } catch (\Throwable $th) {
             DB::rollBack();
 
             return response()->json([
@@ -274,6 +264,20 @@ class UserProfileController extends Controller {
                     $user->save();
                 }
 
+            }
+
+            if ($request["image"]) {
+                $image_path = public_path($user->image) ?? '';
+
+                if (File::exists($image_path)) {
+                    File::delete($image_path);
+                }
+
+                $image_file  = base64_decode($request['image']);
+                $b64_image   = '/images/user/' . time() . '.' . 'png';
+                $success     = file_put_contents(public_path() . $b64_image, $image_file);
+                $user->image = $b64_image;
+                $user->save();
             }
 
             $user->name              = $request["name"];
@@ -349,7 +353,7 @@ class UserProfileController extends Controller {
                     ->with('userRoleAccess')
                     ->get(),
             ]);
-        } catch (\Throwable$th) {
+        } catch (\Throwable $th) {
             DB::rollBack();
 
             return response()->json([
@@ -442,7 +446,7 @@ class UserProfileController extends Controller {
                     'message' => 'User activated successfully!!',
                 ]);
 
-            } catch (\Throwable$th) {
+            } catch (\Throwable $th) {
                 DB::rollBack();
 
                 return response()->json([
@@ -483,7 +487,7 @@ class UserProfileController extends Controller {
                     'message' => 'User inactivated successfully!!',
                 ]);
 
-            } catch (\Throwable$th) {
+            } catch (\Throwable $th) {
                 DB::rollBack();
 
                 return response()->json([
