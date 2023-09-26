@@ -35,13 +35,17 @@ return [
 
     'mailers' => [
         'smtp' => [
-            'transport' => 'smtp',
+            'transport' => 'mail',
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
+            'host' => env('MAIL_HOST', 'mail.gmanager.net'),
+            'port' => env('MAIL_PORT', 465),
+            'from' => [
+                'address' => 'no-reply@gmanager.net',
+                'name' => 'Gmanager'
+            ],
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'username' => env('MAIL_USERNAME','no-reply@gmanager.net'),
+            'password' => env('MAIL_PASSWORD','majhar@pos'),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],

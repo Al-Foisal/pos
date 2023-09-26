@@ -20,7 +20,7 @@ class PackageFeatureController extends Controller {
 
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'en_name' => 'required|unique:package_features',
+            'en_name' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +42,7 @@ class PackageFeatureController extends Controller {
 
     public function update(Request $request, PackageFeature $package_feature) {
         $validator = Validator::make($request->all(), [
-            'en_name' => 'required|unique:package_features,en_name,' . $package_feature->id,
+            'en_name' => 'required',
         ]);
 
         if ($validator->fails()) {

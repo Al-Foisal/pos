@@ -36,7 +36,8 @@
                                         <th>Phone</th>
                                         <th>Address</th>
                                         <th>Image</th>
-                                        <th>Reference and Package</th>
+                                        <th>Refer Codeo</th>
+                                        <th>Package</th>
                                         <th>Custom Subscription</th>
                                         <th>Created_at</th>
                                     </tr>
@@ -51,8 +52,8 @@
                                             <td>{{ $customer->address ?? '' }}</td>
                                             <td><img src="{{ asset($customer->image ?? '') }}" height="50" width="50"
                                                     alt=""></td>
+                                            <td>{{ $customer->reference_code }} </td>
                                             <td>
-                                                Refer code: {{ $customer->reference_code ?? 'Not set' }} <br>
                                                 @php
                                                     $latest_package = DB::table('subscription_histories')
                                                         ->where('user_id', $customer->id)

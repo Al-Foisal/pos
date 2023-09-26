@@ -105,10 +105,10 @@ class UserProfileController extends Controller {
                 'phone'    => 'required',
                 'email'    => 'required|unique:users',
                 'password' => 'required|min:8',
-                'image'    => 'nullable|image|mimes:jpeg,jpg,png,gif',
+                'image'    => 'nullable',
             ]);
 
-            if ($request['image']) {
+             if ($request['image']) {
 
                 $image_file = base64_decode($request['image']);
                 $b64_image  = '/images/user/' . time() . '.' . 'png';
@@ -214,7 +214,7 @@ class UserProfileController extends Controller {
                     ->with('userRoleAccess')
                     ->get(),
             ]);
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             DB::rollBack();
 
             return response()->json([
@@ -238,33 +238,6 @@ class UserProfileController extends Controller {
                 'address'       => 'required',
                 'image'         => 'nullable|image|mimes:jpeg,jpg,png,gif',
             ]);
-
-            if ($request->hasFile('image')) {
-
-                $image_file = $request->file('image');
-
-                if ($image_file) {
-
-                    $image_path = public_path($user->image);
-
-                    if (File::exists($image_path)) {
-                        File::delete($image_path);
-                    }
-
-                    $img_gen   = hexdec(uniqid());
-                    $image_url = 'images/user/';
-                    $image_ext = strtolower($image_file->getClientOriginalExtension());
-
-                    $img_name    = $img_gen . '.' . $image_ext;
-                    $final_name1 = $image_url . $img_gen . '.' . $image_ext;
-
-                    $image_file->move($image_url, $img_name);
-
-                    $user->image = $final_name1;
-                    $user->save();
-                }
-
-            }
 
             if ($request["image"]) {
                 $image_path = public_path($user->image) ?? '';
@@ -353,7 +326,7 @@ class UserProfileController extends Controller {
                     ->with('userRoleAccess')
                     ->get(),
             ]);
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             DB::rollBack();
 
             return response()->json([
@@ -446,7 +419,7 @@ class UserProfileController extends Controller {
                     'message' => 'User activated successfully!!',
                 ]);
 
-            } catch (\Throwable $th) {
+            } catch (\Throwable$th) {
                 DB::rollBack();
 
                 return response()->json([
@@ -487,7 +460,7 @@ class UserProfileController extends Controller {
                     'message' => 'User inactivated successfully!!',
                 ]);
 
-            } catch (\Throwable $th) {
+            } catch (\Throwable$th) {
                 DB::rollBack();
 
                 return response()->json([

@@ -4,6 +4,5 @@
         Anything you want
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; {{ date('Y') }} POS INVENTORY.</strong> All rights
-    reserved.
+    <strong>Copyright &copy; {{ date('Y') }} {{ $company->name }}.</strong> Developed by <a href="http://wiztecbd.com/" target="_blank">Wizard Software & Technology Bangladesh ltd.</a>
 </footer>

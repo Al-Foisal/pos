@@ -30,6 +30,7 @@ class CompanyInfoController extends Controller {
         CompanyInfo::updateOrCreate(
             ['id' => 1],
             [
+                'name'       => $request->name,
                 'about'       => $request->about,
                 'address'     => $request->address,
                 'phone_one'   => $request->phone_one,

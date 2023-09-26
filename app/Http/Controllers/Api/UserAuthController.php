@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetOtp;
-use App\Models\CompanyInfo;
 use App\Models\Customer;
 use App\Models\Package;
 use App\Models\SubscriptionHistory;
@@ -61,7 +60,7 @@ class UserAuthController extends Controller {
             ]);
 
             if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $otp . '&remove_duplicate=true');
+                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601010510&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $otp . '&remove_duplicate=true');
 
             } else {
                 Mail::to($user->email)->send(new PasswordResetOtp($otp));
@@ -152,6 +151,8 @@ class UserAuthController extends Controller {
             $user->otp = null;
             $user->save();
 
+            DB::commit();
+            
             if ($request->red_from === 'login') {
                 if (!Auth::attempt([
                     'email'    => $request->email_or_phone,
@@ -170,8 +171,8 @@ class UserAuthController extends Controller {
                     Auth::guard('web')->logout();
 
                     return response()->json([
-                        'status'  => false,
-                        'message' => 'Your account is expired!!',
+                        'status'     => false,
+                        'message'    => 'Your account is expired!!',
                     ]);
                 }
 
@@ -183,8 +184,6 @@ class UserAuthController extends Controller {
                     'access_token' => $tokenResult,
                 ]);
             }
-
-            DB::commit();
 
             return response()->json([
                 'status'  => true,
@@ -204,7 +203,6 @@ class UserAuthController extends Controller {
 
     public function resendOtp(Request $request) {
 
-        $company = CompanyInfo::find(1);
         DB::beginTransaction();
 
         try {
@@ -224,7 +222,7 @@ class UserAuthController extends Controller {
 
                 $user->otp = rand(111111, 999999);
                 $user->save();
-                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
+                Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601010510&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
 
             } else {
 
@@ -243,7 +241,7 @@ class UserAuthController extends Controller {
                 Mail::to($user->email)->send(new PasswordResetOtp($user->otp));
 
             }
-
+            
             $user->tokens()->delete();
             Auth::guard('web')->logout();
 
@@ -273,6 +271,7 @@ class UserAuthController extends Controller {
                 'password'       => 'required',
             ]);
 
+            $is_expaired = false;
             if (!filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL)) {
 
                 if (!Auth::attempt([
@@ -286,16 +285,10 @@ class UserAuthController extends Controller {
                     ]);
                 }
 
+                
                 $user = Auth::user();
-
                 if ($user->validity < today()) {
-                    $user->tokens()->delete();
-                    Auth::guard('web')->logout();
-
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'Your account is expired!!',
-                    ]);
+                    $is_expaired = true;
                 }
 
                 if (!is_null($user->otp)) {
@@ -303,7 +296,7 @@ class UserAuthController extends Controller {
                     $user      = User::where('email', $request->email_or_phone)->first();
                     $user->otp = rand(111111, 999999);
                     $user->save();
-                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601002704&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
+                    Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601010510&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $user->otp . '&remove_duplicate=true');
 
                     $user->tokens()->delete();
                     Auth::guard('web')->logout();
@@ -312,6 +305,7 @@ class UserAuthController extends Controller {
                         'status'       => false,
                         'message'      => 'Your account is not verified!!',
                         'otp_required' => true,
+                        'is_expaired'  => $is_expaired,
                     ]);
                 }
 
@@ -338,15 +332,8 @@ class UserAuthController extends Controller {
                 }
 
                 $user = Auth::user();
-
                 if ($user->validity < today()) {
-                    $user->tokens()->delete();
-                    Auth::guard('web')->logout();
-
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'Your account is expired!!',
-                    ]);
+                    $is_expaired = true;
                 }
 
                 if (!is_null($user->otp)) {
@@ -375,6 +362,7 @@ class UserAuthController extends Controller {
                     'token_type'   => 'Bearer',
                     'access_token' => $tokenResult,
                     'auth_type'    => 'email',
+                    'is_expaired'  => $is_expaired,
                 ]);
 
             }
@@ -415,19 +403,18 @@ class UserAuthController extends Controller {
                 $user->save();
 
                 if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    // return $user->email;
                     Http::get('https://sysadmin.muthobarta.com/api/v1/send-sms-get?token=f476a73d21a1d7ee2abff920c94eac23021021db&sender_id=8809601010510&receiver=' . trim($user->email) . '&message=G Manager যাচাইকরণ কোডটি হলো: ' . $verification_otp . '&remove_duplicate=true');
                 } else {
                     Mail::to($user->email)->send(new PasswordResetOtp($verification_otp));
                 }
-
+                DB::table('password_resets')->insert([
+                    'token'      => $verification_otp,
+                    'email'      => $request->email,
+                    'created_at' => now(),
+                ]);
             }
 
-            DB::table('password_resets')->insert([
-                'token'      => $verification_otp,
-                'email'      => $request->email,
-                'created_at' => now(),
-            ]);
+            
             DB::commit();
 
             return response()->json([

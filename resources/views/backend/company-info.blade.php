@@ -31,6 +31,10 @@
                             @csrf
                             <div class="card-body">
                                 <div class="form-group">
+                                    <label for="exampleInputEmail1">Name</label>
+                                    <input type="text" name="name" value="{{ $info->name??'' }}" class="form-control">
+                                </div>
+                                <div class="form-group">
                                     <label for="exampleInputEmail1">About (in a nutshell)</label>
                                     <textarea name="about" class="form-control" rows="2"
                                         placeholder="Enter about">{{ $info->about ?? '' }}</textarea>

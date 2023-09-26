@@ -36,6 +36,7 @@
                                         <th>Client Business Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
+                                        <th>Refer Codeo</th>
                                         <th>Validity</th>
                                         <th>Status</th>
                                     </tr>
@@ -75,6 +76,7 @@
                                             <td>{{ $item->business_name }}</td>
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->phone ?? 'Not Set Yet' }}</td>
+                                            <td>{{ $item->reference_code }} </td>
                                             <td>{{ $item->validity }}</td>
                                             <td>{{ $item->status }}</td>
                                         </tr>

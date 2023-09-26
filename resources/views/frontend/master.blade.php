@@ -32,7 +32,7 @@
             <div class="container">
                 <div class="pakap-responsive-menu">
                     <div class="logo">
-                        <a href="{{ url('/') }}"><img src="{{ asset($company->logo) }}" alt="logo"></a>
+                        <a href="{{ url('/') }}"><img src="{{ asset($company->logo) }}" alt="logo" style="height: 82px;"></a>
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
             <div class="container">
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        <img src="{{ asset($company->logo) }}" alt="logo">
+                        <img src="{{ asset($company->logo) }}" alt="logo" style="height: 82px;">
                     </a>
                     <div class="collapse navbar-collapse mean-menu">
                         <ul class="navbar-nav">
@@ -69,7 +69,7 @@
         <div class="container">
             <div class="footer-content">
                 <a href="{{ url('/') }}" class="logo">
-                    <img src="{{ asset($company->logo) }}" alt="logo">
+                    <img src="{{ asset($company->logo) }}" alt="logo" style="height: 82px;">
                 </a>
                 <ul class="social-links">
                     <li><a href="{{ $company->facebook }}" target="_blank"><i class="ri-facebook-fill"></i></a></li>
@@ -86,12 +86,20 @@
                     @endforeach
 
                 </ul>
-                <p class="copyright">Copyright @
-                    <script>
-                        document.write(new Date().getFullYear())
-                    </script> <strong>{{ $company->name }}</strong>. Developed by <a
-                        href="http://wiztecbd.com/" target="_blank">Wizard Software & Technology Bangladesh ltd.</a>
-                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="copyright pt-5">Copyright @
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script> <strong>{{ $company->name }}</strong>. <br>Developed by <a
+                                href="http://wiztecbd.com/" target="_blank">Wizard Software & Technology Bangladesh ltd.</a>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{{ asset('2_lines.webp') }}" style="max-width: 100%;height: 156px;width: 100%;">
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
